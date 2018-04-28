@@ -27,12 +27,27 @@ test_y = y([947:1353],:);
 
 %% ============ Part 2: Compute Cost and Gradient ============
 
-[theta] = oneVsAll(train_x, train_y, 3, 0.1); % Get thetas for all 
+[theta] = oneVsAll(train_x, train_y, 3, 0.1, 0); % Get thetas for all 
                                               % classifiers
+                                              % argument 0 means training
+                                              % without regularization
 
 %% ========== Part 3: Check hypothesis performance ===========
 pred = predictOneVsAll(theta, test_x);
 
 fprintf('\nTraining Set Accuracy: %f\n', mean(pred (:) == test_y(:)) * 100);
 
+
+%% ========== Part 4: Applying regularization ===========
+
+[theta] = oneVsAll(train_x, train_y, 3, 0.1, 1); % Get thetas for all 
+                                              % classifiers
+                                              % argument 1 means training
+                                              % with regularization
+                                              
+
+%% ========== Part 3: Check hypothesis performance with regularization ===========
+pred = predictOneVsAll(theta, test_x);
+
+fprintf('\nTraining Set Accuracy with regularization: %f\n', mean(pred (:) == test_y(:)) * 100);
 

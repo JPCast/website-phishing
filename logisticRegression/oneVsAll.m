@@ -1,4 +1,4 @@
-function [all_theta] = oneVsAll(X, y, num_labels, lambda)
+function [all_theta] = oneVsAll(X, y, num_labels, lambda, reg)
 %ONEVSALL trains multiple logistic regression classifiers and returns all
 %classifiers in a matrix all_theta
 %   [all_theta] = ONEVSALL(X, y, num_labels, lambda) trains multiple
@@ -26,11 +26,10 @@ X = [ones(m, 1), X];
 %dealing with large number of parameters.
 % Set Initial theta
 initial_theta = zeros(n+1,1);
-options = optimset('GradObj', 'on', 'MaxIter', 50);
+options = optimset('GradObj', 'on', 'MaxIter', 400);
   for c = 1:num_labels
-
-       [theta] = gradientDescent(X, y==c, initial_theta, lambda, 50);
-       %[theta] = fmincg(@(t)(costFunctionReg(t,X,(y==c), lambda)),initial_theta,options);
+        [theta] = gradientDescent(X, y==c, initial_theta, lambda, 50, reg, c);
+       %[theta, cost] = fmincg(@(t)(costFunctionReg(t,X,(y==c), lambda)),initial_theta,options);
        
 %Save the parameters of each binary classifier in one raw of matrix all_theta
      all_theta(c,:)=theta';

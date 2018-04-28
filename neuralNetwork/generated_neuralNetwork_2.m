@@ -7,6 +7,13 @@
 %   X - input data.
 %   labels - target data.
 
+clear all
+close all
+clc
+
+load('training.mat');
+load('labels.mat');
+
 x = X';
 t = labels';
 
@@ -18,7 +25,7 @@ t = labels';
 trainFcn = 'trainscg';  % Scaled conjugate gradient backpropagation.
 
 % Create a Pattern Recognition Network
-hiddenLayerSize = 10;
+hiddenLayerSize = 20;
 net = patternnet(hiddenLayerSize);
 
 % Setup Division of Data for Training, Validation, Testing
