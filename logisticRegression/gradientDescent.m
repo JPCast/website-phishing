@@ -1,4 +1,4 @@
-function [theta, J_history] = gradientDescent(X, y, theta, alpha, num_iters, reg, c)
+function [theta, J_history] = gradientDescent(X, y, theta, alpha, num_iters, reg, c, J_history)
 
 m = length(y); % number of training examples
 
@@ -9,7 +9,7 @@ for iter = 1:num_iters
         [j, gradJ] = costFunctionReg(theta, X, y, 1);
     end;
     theta=theta-alpha*gradJ';
-    J_history(c, iter) = computeCost(X, y, theta);
+    J_history(iter, c) = computeCost(X,y,theta);
 end
 end
 

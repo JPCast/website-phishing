@@ -1,0 +1,20 @@
+Distribuição dos dados
+	702 fishing (-1)
+	103 suspicious (0)
+	548 legit (1)
+
+- Regularização não faz grande diferença porque os valores são muito próximos -> visível nos resultados alcançados!
+
+- Como fazer o plot da evolução do custo quando temos valores reais e imaginários?
+
+- Usar rapid miner para fazer visualização dos dados.
+
+- Experimentar feature mapping na regressão logística.
+
+- Usar funções optimizadas (por exemplo fminunc) em vez de gradient descent na regressão logística. (DONE)
+
+- Fazer cross validation.
+
+- Aplicar PCA.
+
+- Ver percentagem de falsos positivos, falsos negativos, recall, etc.

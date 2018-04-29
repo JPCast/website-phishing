@@ -2,6 +2,7 @@
 %% Initialization
 clear ; close all; clc
 
+%% ============= Load and prepare data ================
 data = load('PhishingData.txt');
 c1 = data(:, 1);
 c2 = data(:, 2);
@@ -25,29 +26,52 @@ train_y = y([1:946],:);
 test_x = X([947:1353],:); %Following rows for testing
 test_y = y([947:1353],:);
 
-%% ============ Part 2: Compute Cost and Gradient ============
+%% ============ Compute Cost and Gradient ============
 
-[theta] = oneVsAll(train_x, train_y, 3, 0.1, 0); % Get thetas for all 
+[theta, J_history] = oneVsAll(train_x, train_y, 3, 0.1, 0); % Get thetas for all 
                                               % classifiers
                                               % argument 0 means training
                                               % without regularization
 
-%% ========== Part 3: Check hypothesis performance ===========
-pred = predictOneVsAll(theta, test_x);
-
-fprintf('\nTraining Set Accuracy: %f\n', mean(pred (:) == test_y(:)) * 100);
 
 
-%% ========== Part 4: Applying regularization ===========
+%% ========== Applying regularization ===========
 
-[theta] = oneVsAll(train_x, train_y, 3, 0.1, 1); % Get thetas for all 
+[theta_reg, J_history_reg] = oneVsAll(train_x, train_y, 3, 0.1, 1); % Get thetas for all 
                                               % classifiers
                                               % argument 1 means training
-                                              % with regularization
+                                              % with regularization                                            
                                               
+%% ========== Check hypothesis performance ===========
+clc; %remove previous prints
+pred_train = predictOneVsAll(theta, train_x);
+pred_test = predictOneVsAll(theta, test_x);
 
-%% ========== Part 3: Check hypothesis performance with regularization ===========
-pred = predictOneVsAll(theta, test_x);
+fprintf('\nTraining Set Accuracy on training data: %f', mean(pred_train (:) == train_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on test data: %f\n', mean(pred_test (:) == test_y(:)) * 100);
 
-fprintf('\nTraining Set Accuracy with regularization: %f\n', mean(pred (:) == test_y(:)) * 100);
+%% ========== Plot Cost history ===============
+%J_history = real(J_history);
+%hold on; % keep previous plot visible
+%figure
+%plot(J_history);
+%title('Evolution of the cost for unregularized logistic regression');
+%xlabel('Iteration');
+%ylabel('Cost');
+
+%% ========== Check hypothesis performance with regularization ===========
+pred_train = predictOneVsAll(theta_reg, train_x);
+pred_test = predictOneVsAll(theta_reg, test_x);
+
+fprintf('\nTraining Set Accuracy on training data with regularization: %f', mean(pred_train (:) == train_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on test data with regularization: %f\n', mean(pred_test (:) == test_y(:)) * 100);
+
+%% ========== Plot Cost history ===============
+%figure
+%J_history_reg = real(J_history_reg);
+%plot(J_history_reg);
+%title('Evolution of the cost for regularized logistic regression');
+%xlabel('Iteration');
+%ylabel('Cost');
+
 
