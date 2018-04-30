@@ -27,11 +27,20 @@ X = [ones(m, 1), X];
 % Set Initial theta
 initial_theta = zeros(n+1,1);
 
-J_history = zeros(50, num_labels);
+cost = zeros(50, num_labels);
+
+iter = 5000;
 
 options = optimset('GradObj', 'on', 'MaxIter', 400);
   for c = 1:num_labels
-       %[theta, J_history] = gradientDescent(X, y==c, initial_theta, lambda, 5000, reg, c, J_history);
+%         if c==1
+%             iter = 51;
+%         elseif c==2
+%                 iter = 1;
+%         else
+%             iter = 50;
+%         end
+%        [theta, cost] = gradientDescent(X, y==c, initial_theta, lambda, iter, reg, c, cost);
        if(reg==0)
            [theta, cost] = fminunc(@(t)(costFunction(t, X, y==c)), initial_theta, options);
        else

@@ -1,6 +1,6 @@
 Distribuição dos dados
 	702 fishing (-1)
-	103 suspicious (0)
+	102 suspicious (0)
 	548 legit (1)
 
 - Regularização não faz grande diferença porque os valores são muito próximos -> visível nos resultados alcançados!
@@ -18,3 +18,7 @@ Distribuição dos dados
 - Aplicar PCA.
 
 - Ver percentagem de falsos positivos, falsos negativos, recall, etc.
+
+- ver cvpartition
+
+- usar randperm para gerar indices
