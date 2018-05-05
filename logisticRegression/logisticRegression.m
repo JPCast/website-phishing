@@ -3,35 +3,25 @@
 clear ; close all; clc
 
 %% ============= Load and prepare data ================
-data = load('PhishingData.txt');
-c1 = data(:, 1);
-c2 = data(:, 2);
-c3 = data(:, 3);
-c4 = data(:, 4);
-c5 = data(:, 5);
-c6 = data(:, 6);
-c7 = data(:, 7);
-c8 = data(:, 8);
-c9 = data(:, 9);
+load('training.mat');
+load('labels.mat');
 
-X = [c1 c2 c3 c4 c5 c6 c7 c8 c9];
 X = X+2; %Map values of features to integer interval 1 to 3
-y = data(:, 10);
 y = y + 2; % Map labels to interval 1 to 3
 
-m = size(X,1);	
-training_length = round(0.7*m);
-%crossValidation_length = round(0.15*m);
+m = size(X,1);
+training_length = round(0.65*m);
+crossValidation_length = round(0.2*m);
 
 %Divide data into training, cross validation, and testing sets
 train_x = X([1:training_length],:); %First 946 rows for training (aproximatly 70% of the dataset)
 train_y = y([1:training_length],:);
 
-%cv_x = X([training_length+1:training_length+crossValidation_length],:); %Next rows for cross validation
-%cv_y = y([training_length+1:training_length+crossValidation_length],:);
+cv_x = X([training_length+1:training_length+crossValidation_length],:); %Next rows for cross validation
+cv_y = y([training_length+1:training_length+crossValidation_length],:);
 
-test_x = X([training_length+1:m],:); %Last rows for testing
-test_y = y([training_length+1:m],:);
+test_x = X([training_length+crossValidation_length+1:m],:); %Last rows for testing
+test_y = y([training_length+crossValidation_length+1:m],:);
 
 
 %% ============ Compute Cost and Thetas ============
@@ -54,18 +44,18 @@ test_y = y([training_length+1:m],:);
 %% ========== Check hypothesis performance without regularization ===========
 clc; %remove previous prints
 pred_train = predictOneVsAll(theta, train_x);
-pred_test = predictOneVsAll(theta, test_x);
+pred_test = predictOneVsAll(theta, cv_x);
 
 fprintf('\nTraining Set Accuracy on training data: %f', mean(pred_train (:) == train_y(:)) * 100);
-fprintf('\nTraining Set Accuracy on test data: %f\n', mean(pred_test (:) == test_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on test data: %f\n', mean(pred_test (:) == cv_y(:)) * 100);
 
 % Generate confusion matrix for test set
 pred_test = pred_test';
-confusion_matrix = confusionmat(test_y, pred_test); 
+confusion_matrix = confusionmat(pred_test, cv_y); 
 
 % Determine performance metrics of the model on the test data
 %Acuracy
-accuracy = (confusion_matrix(1,1)+confusion_matrix(2,2)+confusion_matrix(3,3))/length(test_y)*100;
+accuracy = (confusion_matrix(1,1)+confusion_matrix(2,2)+confusion_matrix(3,3))/length(cv_y)*100;
 
 %Recall
 recall_legit = confusion_matrix(3,3)/(confusion_matrix(1,3)+confusion_matrix(2,3)+confusion_matrix(3,3));
@@ -92,14 +82,14 @@ fprintf('\nPrecision (phishing) = %f\n', precision_phishing);
 
 %% ========== Check hypothesis performance with regularization ===========
 pred_train = predictOneVsAll(theta_reg, train_x);
-pred_test = predictOneVsAll(theta_reg, test_x);
+pred_test = predictOneVsAll(theta_reg, cv_x);
 
 fprintf('\nTraining Set Accuracy on training data with regularization: %f', mean(pred_train (:) == train_y(:)) * 100);
-fprintf('\nTraining Set Accuracy on test data with regularization: %f\n', mean(pred_test (:) == test_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on test data with regularization: %f\n', mean(pred_test (:) == cv_y(:)) * 100);
 
 % Generate confusion matrix for test set
 pred_test = pred_test';
-confusion_matrix = confusionmat(test_y, pred_test); 
+confusion_matrix = confusionmat(pred_test, cv_y); 
 
 fprintf('\nConfusion matrix');
 confusion_matrix
@@ -150,19 +140,19 @@ for(i = 1:size(stacked,1))
     newX(:,i) = accumulator;
 end
 
-m = size(newX,1);	
-training_length = round(0.7*m);
-%crossValidation_length = round(0.15*m);
+m = size(X,1);
+training_length = round(0.65*m);
+crossValidation_length = round(0.2*m);
 
 %Divide data into training, cross validation, and testing sets
 train_x = newX([1:training_length],:); %First 946 rows for training (aproximatly 70% of the dataset)
 train_y = y([1:training_length],:);
 
-%cv_x = X([training_length+1:training_length+crossValidation_length],:); %Next rows for cross validation
-%cv_y = y([training_length+1:training_length+crossValidation_length],:);
+cv_x = newX([training_length+1:training_length+crossValidation_length],:); %Next rows for cross validation
+cv_y = y([training_length+1:training_length+crossValidation_length],:);
 
-test_x = newX([training_length+1:m],:); %Last rows for testing
-test_y = y([training_length+1:m],:);
+test_x = newX([training_length+crossValidation_length+1:m],:); %Last rows for testing
+test_y = y([training_length+crossValidation_length+1:m],:);
 
 [theta, J_history] = oneVsAll(train_x, train_y, 3, 0.1, 0); % Get thetas for all 
                                               % classifiers
@@ -170,33 +160,33 @@ test_y = y([training_length+1:m],:);
                                               % without regularization
 
 pred_train = predictOneVsAll(theta, train_x);
-pred_test = predictOneVsAll(theta, test_x);
+pred_test = predictOneVsAll(theta, cv_x);
 
 fprintf('\nTraining Set Accuracy on training data with polymial features of n = %f: %f', max_degree, mean(pred_train (:) == train_y(:)) * 100);
-fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f: %f\n', max_degree, mean(pred_test (:) == test_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f: %f\n', max_degree, mean(pred_test (:) == cv_y(:)) * 100);
 
 % Generate confusion matrix for test set
 pred_test = pred_test';
-confusion_matrix = confusionmat(test_y, pred_test); 
+confusion_matrix = confusionmat(pred_test, cv_y); 
 
 fprintf('\nConfusion matrix');
 confusion_matrix
 
-%%================Adding regularization to the polynomial features=========
-[theta_reg, J_history_reg] = oneVsAll(train_x, train_y, 3, 0.1, 1); % Get thetas for all 
+%% ================Adding regularization to the polynomial features ========
+[theta_reg, J_history_reg] = oneVsAll(train_x, train_y, 3, 0.01, 1); % Get thetas for all 
                                               % classifiers
                                               % argument 1 means training
                                               % with regularization
                                               
 pred_train = predictOneVsAll(theta_reg, train_x);
-pred_test = predictOneVsAll(theta_reg, test_x);
+pred_test = predictOneVsAll(theta_reg, cv_x);
 
 fprintf('\nTraining Set Accuracy on training data with polymial features of n = %f and regularization: %f', max_degree, mean(pred_train (:) == train_y(:)) * 100);
-fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f and regularization: %f\n', max_degree, mean(pred_test (:) == test_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f and regularization: %f\n', max_degree, mean(pred_test (:) == cv_y(:)) * 100);
 
 % Generate confusion matrix for test set
 pred_test = pred_test';
-confusion_matrix = confusionmat(test_y, pred_test); 
+confusion_matrix = confusionmat(pred_test, cv_y); 
 
 fprintf('\nConfusion matrix');
 confusion_matrix
