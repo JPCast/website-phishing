@@ -1,4 +1,4 @@
-data = csvread("PhishingData.txt")
+data = csvread('PhishingData.txt')
 
 %sum(data(:,1)==1;
 %sum(data(:,1)==0;
