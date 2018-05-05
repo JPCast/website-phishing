@@ -1,14 +1,7 @@
 function result = mapFeature(n_numbers, d)
-% MAPFEATURE Feature mapping function to polynomial features
-%
-%   MAPFEATURE(X1, X2) maps the two input features
-%   to quadratic features used in the regularization exercise.
-%
-%   Returns a new feature array with more features, comprising of 
-%   X1, X2, X1.^2, X2.^2, X1*X2, X1*X2.^2, etc..
-%
-%   Inputs X1, X2 must be the same size
-%
+% Feature mapping using multi-variable polynomial
+% Code source: https://stackoverflow.com/questions/33660799/feature-mapping-using-multi-variable-polynomial#33886052
+
     if(n_numbers<=1)
         result = d;
     else

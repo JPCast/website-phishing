@@ -136,7 +136,7 @@ confusion_matrix
 %% ========== Adding polynomial features to solve high bias (underfit) ================
 % code from https://stackoverflow.com/questions/33660799/feature-mapping-using-multi-variable-polynomial#33886052
 n_vars = 9;     % number of variables
-max_degree  = 3;     % order of polynomial
+max_degree  = 4;     % order of polynomial
 stacked = zeros(0, n_vars); %this will collect all the coefficients...    
 for d = 1:max_degree          % for degree 1 polynomial to degree 'order'
     stacked = [stacked; mapFeature(n_vars, d)];
@@ -172,8 +172,8 @@ test_y = y([training_length+1:m],:);
 pred_train = predictOneVsAll(theta, train_x);
 pred_test = predictOneVsAll(theta, test_x);
 
-fprintf('\nTraining Set Accuracy on training data with polymial features of n = %f: %f', max_degree, mean(pred_train (:) == train_y(:)) * 100);
-fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f: %f\n', max_degree, mean(pred_test (:) == test_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on training data with polymial features of n = %f: %f', ma, mean(pred_train (:) == train_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f: %f\n', n, mean(pred_test (:) == test_y(:)) * 100);
 
 % Generate confusion matrix for test set
 pred_test = pred_test';
@@ -191,8 +191,8 @@ confusion_matrix
 pred_train = predictOneVsAll(theta_reg, train_x);
 pred_test = predictOneVsAll(theta_reg, test_x);
 
-fprintf('\nTraining Set Accuracy on training data with polymial features of n = %f and regularization: %f', max_degree, mean(pred_train (:) == train_y(:)) * 100);
-fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f and regularization: %f\n', max_degree, mean(pred_test (:) == test_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on training data with polymial features of n = %f and regularization: %f', n, mean(pred_train (:) == train_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f and regularization: %f\n', n, mean(pred_test (:) == test_y(:)) * 100);
 
 % Generate confusion matrix for test set
 pred_test = pred_test';

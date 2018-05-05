@@ -17,15 +17,10 @@ p = zeros(size(X, 1), 1);
 % Add ones to the X data matrix
 X = [ones(m,1), X];
 
-% ====================== YOUR CODE HERE ======================
-% Instructions: Complete the code to make predictions using
-% the learned logistic regression parameters (one-vs-all).
-%You should set p to a vector of predictions (from 1 to num_labels).
 z = X *all_theta';
 
 h = (1./ (1 + exp(-z) ));
 [var,ind]=max(h');
 p=ind;
 
-% =========================================================================
 end
