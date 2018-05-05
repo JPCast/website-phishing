@@ -133,9 +133,44 @@ confusion_matrix
 % plot(results_test);
 
 
-    
-    
-    
+%% ========== Adding polynomial features to solve high bias (underfit) ================
+% code from https://stackoverflow.com/questions/33660799/feature-mapping-using-multi-variable-polynomial#33886052
+n_vars = 9;     % number of variables
+max_degree  = 3;     % order of polynomial
+stacked = zeros(0, n_vars); %this will collect all the coefficients...    
+for d = 1:max_degree          % for degree 1 polynomial to degree 'order'
+    stacked = [stacked; mapFeature(n_vars, d)];
+end
+newX = zeros(m, size(stacked,1));
+for(i = 1:size(stacked,1))
+    accumulator = ones(m, 1);
+    for(j = 1:n_vars)
+        accumulator = accumulator .* X(:,j).^stacked(i,j);
+    end
+    newX(:,i) = accumulator;
+end
 
+m = size(newX,1);	
+training_length = round(0.7*m);
+%crossValidation_length = round(0.15*m);
 
+%Divide data into training, cross validation, and testing sets
+train_x = newX([1:training_length],:); %First 946 rows for training (aproximatly 70% of the dataset)
+train_y = y([1:training_length],:);
 
+%cv_x = X([training_length+1:training_length+crossValidation_length],:); %Next rows for cross validation
+%cv_y = y([training_length+1:training_length+crossValidation_length],:);
+
+test_x = newX([training_length+1:m],:); %Last rows for testing
+test_y = y([training_length+1:m],:);
+
+[theta, J_history] = oneVsAll(train_x, train_y, 3, 0.1, 0); % Get thetas for all 
+                                              % classifiers
+                                              % argument 0 means training
+                                              % without regularization
+
+pred_train = predictOneVsAll(theta, train_x);
+pred_test = predictOneVsAll(theta, test_x);
+
+fprintf('\nTraining Set Accuracy on training data: %f', mean(pred_train (:) == train_y(:)) * 100);
+fprintf('\nTraining Set Accuracy on test data: %f\n', mean(pred_test (:) == test_y(:)) * 100);

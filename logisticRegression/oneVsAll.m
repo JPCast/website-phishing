@@ -41,6 +41,14 @@ options = optimset('GradObj', 'on', 'MaxIter', 400);
 %             iter = 50;
 %         end
 %        [theta, cost] = gradientDescent(X, y==c, initial_theta, lambda, iter, reg, c, cost);
+%        for j = 1:m
+%            if(y(j)~=c)
+%                y_binary(j)=0;
+%            else
+%                y_binary(j)=1;
+%            end
+%        end
+           
        if(reg==0)
            [theta, cost] = fminunc(@(t)(costFunction(t, X, y==c)), initial_theta, options);
        else
