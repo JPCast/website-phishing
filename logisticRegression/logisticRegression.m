@@ -97,7 +97,7 @@ confusion_matrix
 
 
 %% ========== Check regularization performance for several values of lambda ===============
-% 
+
 % lambda = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
 % results_train = zeros(length(lambda));
 % results_test = zeros(length(lambda));
@@ -117,16 +117,22 @@ confusion_matrix
 %     results_test(i) = (mean(pred_test (:) == test_y(:)) * 100);
 % end
 % clc;
+% % figure
+% % plot(results_train);
+% % title('Regularized Logistic Regression performance on trainig set');
 % figure
-% plot(results_train);
-% figure
-% plot(results_test);
+% plot(lambda, results_test);
+% title('Regularized Logistic Regression performance');
+% xlabel('Lambda');
+% ylabel('Accuracy');
+% ylim([0 100]);
+% grid on;
 
 
 %% ========== Adding polynomial features to solve high bias (underfit) ================
-% code from https://stackoverflow.com/questions/33660799/feature-mapping-using-multi-variable-polynomial#33886052
+%code from https://stackoverflow.com/questions/33660799/feature-mapping-using-multi-variable-polynomial#33886052
 n_vars = 9;     % number of variables
-max_degree  = 3;     % order of polynomial
+max_degree  = 4;     % order of polynomial
 stacked = zeros(0, n_vars); %this will collect all the coefficients...    
 for d = 1:max_degree          % for degree 1 polynomial to degree 'order'
     stacked = [stacked; mapFeature(n_vars, d)];
@@ -159,10 +165,10 @@ test_y = y([training_length+crossValidation_length+1:m],:);
                                               % argument 0 means training
                                               % without regularization
 
-pred_train = predictOneVsAll(theta, train_x);
+%pred_train = predictOneVsAll(theta, train_x);
 pred_test = predictOneVsAll(theta, cv_x);
 
-fprintf('\nTraining Set Accuracy on training data with polymial features of n = %f: %f', max_degree, mean(pred_train (:) == train_y(:)) * 100);
+%fprintf('\nTraining Set Accuracy on training data with polymial features of n = %f: %f', max_degree, mean(pred_train (:) == train_y(:)) * 100);
 fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f: %f\n', max_degree, mean(pred_test (:) == cv_y(:)) * 100);
 
 % Generate confusion matrix for test set
@@ -173,20 +179,10 @@ fprintf('\nConfusion matrix');
 confusion_matrix
 
 %% ================Adding regularization to the polynomial features ========
-[theta_reg, J_history_reg] = oneVsAll(train_x, train_y, 3, 0.01, 1); % Get thetas for all 
-                                              % classifiers
-                                              % argument 1 means training
-                                              % with regularization
-                                              
-pred_train = predictOneVsAll(theta_reg, train_x);
+[theta_reg, J_history_reg] = oneVsAll(train_x, train_y, 3, 3, 1); % Get 
+                                          %thetas for all classifiers
+                                          % argument 1 means training
+                                          % with regularization   
+
 pred_test = predictOneVsAll(theta_reg, cv_x);
-
-fprintf('\nTraining Set Accuracy on training data with polymial features of n = %f and regularization: %f', max_degree, mean(pred_train (:) == train_y(:)) * 100);
-fprintf('\nTraining Set Accuracy on test data with polynomial features of n = %f and regularization: %f\n', max_degree, mean(pred_test (:) == cv_y(:)) * 100);
-
-% Generate confusion matrix for test set
-pred_test = pred_test';
-confusion_matrix = confusionmat(pred_test, cv_y); 
-
-fprintf('\nConfusion matrix');
-confusion_matrix
+fprintf('\nTraining Set Accuracy on test data regularized, with polynomial features of n = %f: %f\n', max_degree, mean(pred_test (:) == cv_y(:)) * 100);
