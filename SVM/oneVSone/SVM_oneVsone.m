@@ -18,7 +18,7 @@ models = cell(size(labelCombinations,1),1);            %# store binary-classifer
 % predTest = cell(1,length(models)); 
 predTest = zeros(sizeData(1,1)-sizeOfTrainningData,length(models));
 
-for m=1:length(svmModel)
+for m=1:length(models)
     trainingData=[];
     %testData=[];
     for label=1:size(labelCombinations,2)
