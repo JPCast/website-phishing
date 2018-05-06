@@ -37,24 +37,23 @@ initial_Theta2 = randInitializeWeights(hidden_layer_size, num_labels);
 initial_nn_params = [initial_Theta1(:) ; initial_Theta2(:)];
 
 % =============== Training neural network ===============
- 
 
-lambda = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.5, 2, 2.5, 3];
-result = []
+result = zeros(150, 1);
+
 %fprintf('\nTraining Neural Network... \n')
-for i=1:length(lambda)
+for i=50:200
     fprintf('Iteration %f\n', i);
 
-    options = optimset('MaxIter', 43);
+    options = optimset('MaxIter', i);
 
     %  You should also try different values of lambda
-   % lambda = 1;
+    lambda = 1;
 
     % Create "short hand" for the cost function to be minimized
     costFunction = @(p) nnCostFunction(p, ...
                                        input_layer_size, ...
                                        hidden_layer_size, ...
-                                       num_labels, train_x, train_y, lambda(i));
+                                       num_labels, train_x, train_y, lambda);
 
     [nn_params, cost] = fmincg(costFunction, initial_nn_params, options);
 
@@ -71,12 +70,11 @@ for i=1:length(lambda)
     result(i) = mean(double(pred(:) == cv_y)) * 100;
 end
 
-%      fprintf('\nTraining Set Accuracy: %f\n', mean(double(pred(:) == cv_y)) * 100);
+%     fprintf('\nTraining Set Accuracy: %f\n', mean(double(pred(:) == cv_y)) * 100);
 plot(result);
 ylim([0 100]);
-xlim([0 3]);
 grid on;
-title('Neural network performance');
-xlabel('Lambda');
+title('Neural network performance with 1 hidden layer');
+xlabel('Epochs');
 ylabel('Accuracy');
 
