@@ -24,7 +24,7 @@ if len(sys.argv)>1:
 data = loadtxt('PhishingData.txt', delimiter=",")
 
 # split data into X and y
-X = data[:,0:8]
+X = data[:,0:9]
 y = data[:,9]
 
 seed = 7
