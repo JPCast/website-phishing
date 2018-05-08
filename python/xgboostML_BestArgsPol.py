@@ -7,13 +7,20 @@ from sklearn.metrics import accuracy_score
 from numpy import sort
 from sklearn.feature_selection import SelectFromModel
 from sklearn.preprocessing import PolynomialFeatures
-import sys
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
 
+import sys
+import numpy as np
 print("------------------------------------------------")
 print("to test this algoithm using polynomial feautures use as argument -> -p as flag with the number of feautures that you want use -> -p 2")
 
 
 usePolynomialFeatures=False
+useTest=False
+if len(sys.argv)>1:
+	if str(sys.argv[1])=='-t':
+		useTest=True
 if len(sys.argv)>2:
 	if str(sys.argv[1])=='-p':
 		usePolynomialFeatures=True
@@ -40,28 +47,43 @@ seed = 7
 testAndCrossValidation_size = 0.45
 X_train, X_crossAndTest, y_train, y_crossAndTest = train_test_split(X, y, test_size=testAndCrossValidation_size, shuffle=False)
 test_size=0.428571429
-X_CrossValidation, X_test, y_CrossValidation, y_test = train_test_split(X, y, test_size=test_size, shuffle=False)
+X_CrossValidation, X_test, y_CrossValidation, y_test = train_test_split(X_crossAndTest, y_crossAndTest, test_size=test_size, shuffle=False)
 
 
-max_depth=5  #=4
-learning_rate=0.2  #=0.5
-n_estimator=80 #=80   n conlusion
+max_depth=8 #5  #=4
+learning_rate=0.1 #0.2  #=0.5
+n_estimator=50 #80 #=80   n conlusion
 #silent=False #=false      100%
-min_child_weight=1  #=3
+min_child_weight=3  #1  #=3
 
 
 # fit model no training data
 model = XGBClassifier(max_depth=max_depth,learning_rate=learning_rate,n_estimator=n_estimator,min_child_weight=min_child_weight)
 #model = XGBClassifier()
+if useTest:
+	testAndCrossValidation_size = 0.15
+	X_train, X_crossAndTest, y_train, y_crossAndTest = train_test_split(X, y, test_size=testAndCrossValidation_size, shuffle=False)
+	model.fit(X_train,y_train)
+else:
+	model.fit(X_train, y_train)
 print(model)
 #print(model)
-model.fit(X_train, y_train)
-y_pred = model.predict(X_CrossValidation)
+if useTest:
+	print(X_train.size)
+	y_pred = model.predict(X_test)
+	predictions = [round(value) for value in y_pred]
+	accuracy = accuracy_score(y_test, predictions)
+	#confusion_matrix(y_test, predictions)
+else:
+	y_pred = model.predict(X_CrossValidation)
+	predictions = [round(value) for value in y_pred]
+	accuracy = accuracy_score(y_CrossValidation, predictions)
+	#confusion_matrix(y_CrossValidation, predictions)
 
-predictions = [round(value) for value in y_pred]
-accuracy = accuracy_score(y_CrossValidation, predictions)
 
-print("Accuracy: %.2f%%" % (accuracy*100.0))
+
+
+print("Accuracy: %f" % (accuracy*100.0))
 	# plot the importance of feautures
 plot_importance(model)
 pyplot.show()
@@ -90,10 +112,14 @@ for thresh in thresholds:
 	y_pred = selection_model.predict(select_X_test)
 	predictions = [round(value) for value in y_pred]
 	accuracy = accuracy_score(y_CrossValidation, predictions)
-#	accuracys.append(accuracy)
+	accuracys.append(accuracy*100)
 	sizeModel.append(select_X_train.shape[1])
 	print("Thresh=%.3f, n=%d, Accuracy: %f" % (thresh, select_X_train.shape[1], accuracy*100.0))
-
+plt.plot(sizeModel,accuracys)
+plt.title('Gradient Boosted Trees - Best Values') # subplot 211 title
+t = plt.xlabel('Accuracy', fontsize=12)
+t = plt.ylabel('Number of Feautures', fontsize=12)
+plt.show()
 while len(accuracys)>0:
 	print(max(accuracys))
 	indMA = accuracys.index(max(accuracys))

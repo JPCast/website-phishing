@@ -18,7 +18,7 @@ seed = 7
 testAndCrossValidation_size = 0.45
 X_train, X_crossAndTest, y_train, y_crossAndTest = train_test_split(X, y, test_size=testAndCrossValidation_size, shuffle=False)
 test_size=0.428571429
-X_CrossValidation, X_test, y_CrossValidation, y_test = train_test_split(X, y, test_size=test_size, shuffle=False)
+X_CrossValidation, X_test, y_CrossValidation, y_test = train_test_split(X_crossAndTest, y_crossAndTest, test_size=test_size, shuffle=False)
 
 # fit model no training data
 model = XGBClassifier()
@@ -62,7 +62,7 @@ for max_depth in max_depths:
 				predictions = [round(value) for value in y_pred]
 				accuracy = accuracy_score(y_CrossValidation, predictions)
 				accuracys.append([accuracy])
-				saveModel.append([accuracy,min_child_weight,max_depth,learning_rate,n_estimator])
+				saveModel.append([min_child_weight,max_depth,learning_rate,n_estimator])
 				#print(model)
 				#print("Accuracy: %.2f%%" % (accuracy*100.0))
 

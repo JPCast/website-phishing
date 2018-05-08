@@ -9,6 +9,8 @@ from sklearn.feature_selection import SelectFromModel
 from numpy import loadtxt
 from matplotlib import pyplot
 from numpy import sort
+import matplotlib.pyplot as plt
+
 
 print("---------------------------------------------------------")
 print("to test svm one vs rest with the best feautures calculated by xgboost use as argument -> -m")
@@ -31,7 +33,7 @@ seed = 7
 testAndCrossValidation_size = 0.45
 X_train, X_crossAndTest, y_train, y_crossAndTest = train_test_split(X, y, test_size=testAndCrossValidation_size, shuffle=False)
 test_size=0.428571429
-X_CrossValidation, X_test, y_CrossValidation, y_test = train_test_split(X, y, test_size=test_size, shuffle=False)
+X_CrossValidation, X_test, y_CrossValidation, y_test = train_test_split(X_crossAndTest,y_crossAndTest, test_size=test_size, shuffle=False)
 
 #one vs rest
 clf = svm.SVC()
@@ -46,7 +48,8 @@ print("Accuracy: %.2f%%" % (accuracy * 100.0))
 
 
 ########################################################################
-
+accuracys=[]
+numbersOfFeatures=[]
 if useMostImportantFeature:
     # fit model no training data -> only used to calculat the importance of features
     model = XGBClassifier()
@@ -68,4 +71,12 @@ if useMostImportantFeature:
     	y_pred = selection_model.predict(select_X_test)
     	predictions = [round(value) for value in y_pred]
     	accuracy = accuracy_score(y_CrossValidation, predictions)
+        numbersOfFeatures.append(select_X_train.shape[1])
+        accuracys.append(accuracy)
     	print("Thresh=%.3f, n=%d, Accuracy: %.2f%%" % (thresh, select_X_train.shape[1], accuracy*100.0))
+plt.plot(numbersOfFeatures,accuracys)
+plt.title('SVM - Python') # subplot 211 title
+t = plt.xlabel('Number of Feautures', fontsize=12)
+t = plt.ylabel('Accuracy', fontsize=12)
+
+plt.show()
