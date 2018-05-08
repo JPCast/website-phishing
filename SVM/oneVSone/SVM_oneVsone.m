@@ -13,9 +13,9 @@ testData=data(sizeOfTrainningData+1:sizeData(1,1),:);
 
 labels=unique(data(:,10))
 
-labelCombinations = nchoosek(labels,2);            %# 1-vs-1 combination of labels 
+labelCombinations = nchoosek(labels,2);            %# 1-vs-1 combination of labels
 models = cell(size(labelCombinations,1),1);            %# store binary-classifers
-% predTest = cell(1,length(models)); 
+% predTest = cell(1,length(models));
 predTest = zeros(sizeData(1,1)-sizeOfTrainningData,length(models));
 
 for m=1:length(models)
@@ -29,11 +29,12 @@ for m=1:length(models)
     predTest(:,m) = svmpredict(testData(:,10), testData(:,[1:9]), models{m})
    % svmclassify(models{m},testData(:,[1:9]));
 end
-pred = mode(predTest,2);   %# clasify as the class receiving most votes
+%# clasify that as more votes
+pred = mode(predTest,2);
 
 cmat = confusionmat(testData(:,10),pred);
 acc = 100*sum(diag(cmat))./sum(cmat(:));
-fprintf('SVM (1-against-1):\naccuracy = %.2f%%\n', acc);
+fprintf('SVM (1 vs 1):\naccuracy = %.2f%%\n', acc);
 fprintf('Confusion Matrix:\n'), disp(cmat)
 
 %get index of each class
