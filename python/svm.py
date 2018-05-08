@@ -28,17 +28,20 @@ X = data[:,0:9]
 y = data[:,9]
 
 seed = 7
-test_size = 0.3
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=seed)
+testAndCrossValidation_size = 0.45
+X_train, X_crossAndTest, y_train, y_crossAndTest = train_test_split(X, y, test_size=testAndCrossValidation_size, shuffle=False)
+test_size=0.428571429
+X_CrossValidation, X_test, y_CrossValidation, y_test = train_test_split(X, y, test_size=test_size, shuffle=False)
+
 #one vs rest
 clf = svm.SVC()
 clf.fit(X_train, y_train)
 print(clf)
-y_pred = clf.predict(X_test)
+y_pred = clf.predict(X_CrossValidation)
 
 predictions = [round(value) for value in y_pred]
 #verify predictions
-accuracy = accuracy_score(y_test, predictions)
+accuracy = accuracy_score(y_CrossValidation, predictions)
 print("Accuracy: %.2f%%" % (accuracy * 100.0))
 
 
@@ -61,8 +64,8 @@ if useMostImportantFeature:
     	selection_model = svm.SVC()
         selection_model.fit(select_X_train, y_train)
     	# eval model
-    	select_X_test = selection.transform(X_test)
+    	select_X_test = selection.transform(X_CrossValidation)
     	y_pred = selection_model.predict(select_X_test)
     	predictions = [round(value) for value in y_pred]
-    	accuracy = accuracy_score(y_test, predictions)
+    	accuracy = accuracy_score(y_CrossValidation, predictions)
     	print("Thresh=%.3f, n=%d, Accuracy: %.2f%%" % (thresh, select_X_train.shape[1], accuracy*100.0))
